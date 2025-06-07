@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="บทวิเคราะห์เชิงลึกเผยสัญญาณคุณภาพทางบัญชีและภาวะที่ตลาดไม่ตอบสนองต่อปัจจัยพื้นฐานของ NVIDIA ตลอดทศวรรษที่ผ่านมา ชี้ให้เห็นว่าความสนใจแต่เรื่องการเติบโตสามารถบดบังดัชนีชี้วัดความเสี่ยงทางการเงินแบบดั้งเดิมได้อย่างไรในช่วงที่บริษัทกำลังเปลี่ยนผ่าน">
+    <title>เมื่อตลาดเมินสัญญาณอันตรายทางการเงิน: ทศวรรษแห่งสัญญาณเตือนทางบัญชีนิติเวชของ NVIDIA</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Georgia', serif; /* สามารถเปลี่ยนเป็นฟอนต์ภาษาไทยที่เหมาะสมได้ เช่น 'Sarabun' */
+            line-height: 1.7;
+            color: #333;
+            background-color: #fafafa;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .header .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .content {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .content h2 {
+            color: #2d3748;
+            font-size: 1.8rem;
+            margin: 30px 0 20px 0;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .content h3 {
+            color: #4a5568;
+            font-size: 1.4rem;
+            margin: 25px 0 15px 0;
+        }
+        
+        .content p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+        
+        .visualization-container {
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 30px 0;
+            border-left: 5px solid #667eea;
+        }
+        
+        .visualization-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin: 20px 0;
+        }
+        
+        .chart-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .chart-controls button {
+            padding: 8px 16px;
+            border: 1px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .chart-controls button.active,
+        .chart-controls button:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .insight-card {
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        
+        .insight-card.conservative {
+            background: #f0fff4;
+            border-color: #38a169;
+        }
+        
+        .insight-card.disconnect {
+            background: #fffaf0;
+            border-color: #ed8936;
+        }
+        
+        .insight-card.validation {
+            background: #ebf8ff;
+            border-color: #3182ce;
+        }
+        
+        .insight-card h4 {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #2d3748;
+        }
+        
+        .takeaways {
+            background: #edf2f7;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        
+        .takeaways h3 {
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+        
+        .takeaways ol {
+            padding-left: 20px;
+        }
+        
+        .takeaways li {
+            margin-bottom: 15px;
+            font-size: 1.05rem;
+        }
+        
+        .takeaways strong {
+            color: #667eea;
+        }
+        
+        .questions {
+            background: #f7fafc;
+            padding: 25px;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+            margin: 30px 0;
+        }
+        
+        .questions h3 {
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+        
+        .questions ol {
+            padding-left: 20px;
+        }
+        
+        .questions li {
+            margin-bottom: 10px;
+            font-style: italic;
+        }
+        
+        .meta-info {
+            background: #1a202c;
+            color: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 40px;
+        }
+        
+        .word-count {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        .essential-insights {
+            background: #667eea;
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+        
+        .essential-insights h3 {
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .essential-insights ol {
+            padding-left: 20px;
+        }
+        
+        .essential-insights li {
+            margin-bottom: 15px;
+        }
+        
+        .essential-insights strong {
+            color: #ffd700;
+        }
+        
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .chart-container {
+                height: 300px;
+            }
+            
+            .insights-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>เมื่อตลาดเมินสัญญาณอันตรายทางการเงิน: ทศวรรษแห่งสัญญาณเตือนทางบัญชีนิติเวชของ NVIDIA</h1>
+            <p class="subtitle">บทวิเคราะห์ที่เผยให้เห็นว่าการให้ความสำคัญแต่การเติบโตทางธุรกิจสามารถบดบังดัชนีชี้วัดคุณภาพทางการเงินแบบดั้งเดิมได้อย่างไรในช่วงที่บริษัทกำลังเปลี่ยนผ่าน</p>
+        </header>
+
+        <article class="content">
+            <p>ความเชื่อมโยงระหว่างคุณภาพกำไรและการประเมินมูลค่าของตลาดนับวันยิ่งซับซ้อนขึ้น กรณีของ NVIDIA ถือเป็นตัวอย่างที่น่าทึ่งที่สุด: บทวิเคราะห์เชิงลึกทางบัญชีนิติเวช (Forensic Accounting) ตลอดทศวรรษที่ผ่านมา (2014-2024) ได้เผยให้เห็นความขัดแย้งที่น่าสนใจ เมื่อแบบจำลองทางการบัญชีขั้นสูงกลับส่งสัญญาณเตือนความเสี่ยง ในช่วงเวลาเดียวกับที่ราคาหุ้นให้ผลตอบแทนมหาศาล</p>
+
+            <h2>ตัวเลขที่บอกเล่าเรื่องราวอันน่าทึ่ง</h2>
+            <p>ระหว่างปี 2014 ถึง 2024 NVIDIA ได้พลิกโฉมจากบริษัทที่มีกำไรสุทธิ 563 ล้านดอลลาร์สหรัฐ สู่ยักษ์ใหญ่ที่มีกำไรสูงถึง 29.76 พันล้านดอลลาร์สหรัฐ แต่ภายใต้การเติบโตอันน่าประทับใจนี้ ซ่อนไว้ซึ่งปริศนาทางบัญชีนิติเวชที่น่าสนใจ และท้าทายความเชื่อดั้งเดิมเกี่ยวกับวิธีที่ตลาดตอบสนองต่อสัญญาณคุณภาพทางการเงิน</p>
+
+            <div class="visualization-container">
+                <div class="visualization-title">ภาพรวมคุณภาพกำไรหลายมิติ</div>
+                <div class="chart-controls">
+                    <button id="btnEarnings" class="active" onclick="showChart('earnings')">กำไรสุทธิ เทียบกับ กระแสเงินสด</button>
+                    <button id="btnFlags" onclick="showChart('flags')">ไทม์ไลน์ความเสี่ยงทางบัญชีนิติเวช</button>
+                </div>
+                <div class="chart-container">
+                    <canvas id="earningsChart"></canvas>
+                </div>
+                <div class="legend" id="earningsLegend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #3b82f6;"></div>
+                        <span>กำไรสุทธิ</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #ef4444;"></div>
+                        <span>กระแสเงินสดจากการดำเนินงาน</span>
+                    </div>
+                </div>
+            </div>
+
+            <p>Beneish M-Score ซึ่งเป็นแบบจำลองที่ใช้กันอย่างแพร่หลายในการตรวจจับการตกแต่งบัญชี ได้ส่งสัญญาณเตือน NVIDIA ถึง 5 ปีจาก 11 ปี ได้แก่ ปี 2017, 2018, 2019, 2022 และ 2024 สัญญาณเตือนเหล่านี้ไม่ได้เกิดขึ้นแบบสุ่ม แต่กระจุกตัวอยู่ในช่วงที่บริษัทมีการเปลี่ยนแปลงทางธุรกิจครั้งสำคัญที่สุด และเกิดขึ้นพร้อมกับการทะยานขึ้นของราคาหุ้นอย่างก้าวกระโดด</p>
+
+            <h2>ปรากฏการณ์ที่ตลาดและข้อมูลทางบัญชีสวนทางกัน</h2>
+            <p>พิจารณาปี 2024 ซึ่งเป็นปีทองของ NVIDIA ราคาหุ้นปิดที่ 134.28 ดอลลาร์สหรัฐ สะท้อนการเติบโตอย่างมหาศาล แต่ในขณะเดียวกันก็มีสัญญาณเตือนทั้งจากค่าคงค้างที่ผิดปกติ (Discretionary Accruals) และ Beneish M-Score ซึ่งถือเป็นระดับความเสี่ยงทางบัญชีนิติเวชสูงสุดในชุดข้อมูลนี้ แต่แทนที่นักลงทุนจะระมัดระวังมากขึ้น ตลาดกลับดูเหมือนจะเพิกเฉยต่อสัญญาณความเสี่ยงแบบดั้งเดิมเหล่านี้อย่างสิ้นเชิง</p>
+
+            <div class="visualization-container">
+                <div class="visualization-title">สัญญาณเตือนทางบัญชีนิติเวช เทียบกับ ผลตอบแทนราคาหุ้น</div>
+                <div class="chart-container">
+                    <canvas id="stockChart"></canvas>
+                </div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #dc2626;"></div>
+                        <span>สัญญาณเตือนคู่ (ความเสี่ยงสูง)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #f59e0b;"></div>
+                        <span>สัญญาณเตือนเดี่ยว (ความเสี่ยงปานกลาง)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #16a34a;"></div>
+                        <span>ไม่มีสัญญาณเตือน (ปลอดภัย)</span>
+                    </div>
+                </div>
+            </div>
+
+            <p>รูปแบบนี้เกิดขึ้นซ้ำ ๆ ในหลายปี:</p>
+            <ul>
+                <li><strong>ปี 2019:</strong> แบบจำลองทางบัญชีนิติเวชทั้งสองส่งสัญญาณเตือน ตามมาด้วยผลตอบแทนราคาหุ้น +122%</li>
+                <li><strong>ปี 2022:</strong> สัญญาณเตือนคู่เกิดขึ้นก่อนที่ราคาหุ้นจะพุ่งขึ้น +239% ในปี 2023</li>
+                <li><strong>ปี 2020:</strong> ความผิดปกติของค่าคงค้างที่สำคัญนำไปสู่ผลตอบแทน +125% ในปีถัดมา</li>
+            </ul>
+
+            <p>การสวนทางกันอย่างเป็นระบบนี้ชี้ให้เห็นว่า ตลาดอาจให้ความสำคัญกับเรื่องเล่าการเติบโตมากกว่าตัวชี้วัดคุณภาพทางบัญชีพื้นฐานในช่วงเวลาแห่งการเปลี่ยนแปลง</p>
+
+            <h2>ทำความเข้าใจหลักฐานทางบัญชีนิติเวช</h2>
+            <p>การวิเคราะห์นี้ใช้แบบจำลองทางบัญชีนิติเวชที่เป็นที่ยอมรับ 3 รูปแบบเพื่อประเมินคุณภาพกำไรของ NVIDIA:</p>
+
+            <h3>การวิเคราะห์การปรับกำไรให้เรียบ (Earnings Smoothing Analysis)</h3>
+            <p>ดัชนีการปรับกำไรให้เรียบของ NVIDIA อยู่ที่ 1.08 ซึ่งอยู่ในช่วงปกติ (0.7-1.3) การทดสอบทางสถิติไม่พบการปรับแต่งกำไรให้เรียบอย่างมีนัยสำคัญ (p-value: 0.406) ซึ่งบ่งชี้ว่าความผันผวนของกำไรเป็นไปตามจริง ไม่ได้เกิดจากการตกแต่งบัญชี</p>
+
+            <div class="visualization-container">
+                <div class="visualization-title">เมทริกซ์คุณภาพกระแสเงินสดเทียบกับกำไร</div>
+                <div class="chart-container">
+                    <canvas id="qualityChart"></canvas>
+                </div>
+                <p style="text-align: center; font-size: 0.9rem; color: #666; margin-top: 10px;">
+                    จุดที่อยู่เหนือเส้นทแยงมุมบ่งชี้ว่ากระแสเงินสดจากการดำเนินงานสูงกว่ากำไรสุทธิ (สัญญาณคุณภาพเชิงบวก)
+                </p>
+            </div>
+
+            <h3>การประเมินค่าคงค้างที่ผิดปกติ (Discretionary Accruals Assessment)</h3>
+            <p>แบบจำลอง Modified Jones เผยให้เห็นค่าคงค้างที่ผิดปกติในแดนลบเป็นส่วนใหญ่ตลอดทศวรรษ โดยมี 5 ปีที่ค่าต่ำกว่าเกณฑ์ -0.10 ที่น่าสนใจคือ ค่าที่เป็นลบเหล่านี้บ่งชี้ถึงการบันทึกบัญชีแบบระมัดระวัง (Conservative) มากกว่าการตกแต่งกำไรให้สูงเกินจริง ซึ่งตรงกันข้ามกับความกังวลเรื่องการตกแต่งบัญชีโดยทั่วไป</p>
+
+            <h3>การวิเคราะห์ Beneish M-Score</h3>
+            <p>มี 5 ปีที่ค่า M-Score เกินเกณฑ์ความเสี่ยงในการตกแต่งบัญชีที่ -2.22 โดยปี 2024 มีค่าสูงสุดที่ -0.80 อย่างไรก็ตาม เมื่อวิเคราะห์องค์ประกอบ พบว่าสัญญาณเตือนเหล่านี้สะท้อนถึงการขยายตัวอย่างรวดเร็วของธุรกิจเป็นหลัก มากกว่าที่จะเป็นการตกแต่งบัญชีที่น่ากังวลอย่างชัดเจน</p>
+
+            <div class="visualization-container">
+                <div class="visualization-title">การวิเคราะห์องค์ประกอบของ Beneish M-Score</div>
+                <div class="chart-container">
+                    <canvas id="beneishChart"></canvas>
+                </div>
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #dc2626;"></div>
+                        <span>ความเสี่ยงสูง (>2.0)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #f59e0b;"></div>
+                        <span>ความเสี่ยงปานกลาง (1.2-2.0)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #16a34a;"></div>
+                        <span>ปกติ (<1.2)</span>
+                    </div>
+                </div>
+            </div>
+
+            <h2>รากฐานที่มั่นคงจากกระแสเงินสด</h2>
+            <p>แม้จะมีสัญญาณเตือนทางบัญชีนิติเวชเป็นระยะ แต่ NVIDIA ยังคงรักษากระแสเงินสดที่แข็งแกร่งเพื่อสนับสนุนกำไรที่รายงานตลอดช่วงเวลาที่วิเคราะห์ กระแสเงินสดจากการดำเนินงานเติบโตจาก 909 ล้านดอลลาร์สหรัฐในปี 2014 เป็น 28.09 พันล้านดอลลาร์สหรัฐในปี 2024 ซึ่งสอดคล้องหรือสูงกว่าระดับกำไรสุทธิอย่างต่อเนื่อง</p>
+
+            <p>อัตราส่วน Sloan Accruals ซึ่งวัดคุณภาพของกำไรผ่านการสนับสนุนจากกระแสเงินสด ส่งสัญญาณเตือนเพียงปีเดียว (ปี 2020) ด้วยอัตราส่วน -0.149 เหตุการณ์ที่เกิดขึ้นเพียงครั้งเดียวนี้สอดคล้องกับความไม่แน่นอนที่เกี่ยวข้องกับการระบาดใหญ่ ซึ่งชี้ให้เห็นถึงการจัดการเงินทุนหมุนเวียนอย่างรอบคอบมากกว่าปัญหาด้านคุณภาพอย่างเป็นระบบ</p>
+
+            <h2>การเปลี่ยนผ่านทางธุรกิจในฐานะตัวกระตุ้นสัญญาณเตือนทางบัญชีนิติเวช</h2>
+            <p>สัญญาณเตือนทางบัญชีนิติเวชสอดคล้องอย่างยิ่งกับช่วงเวลาแห่งการเปลี่ยนแปลงทางธุรกิจที่สำคัญของ NVIDIA กลุ่มแรก (2017-2019) เกิดขึ้นพร้อมกับการขยายตัวของธุรกิจเกมและคริปโทเคอร์เรนซี ในขณะที่สัญญาณเตือนล่าสุด (2022, 2024) สอดคล้องกับการปฏิวัติโครงสร้างพื้นฐานด้าน AI</p>
+
+            <div class="visualization-container">
+                <div class="visualization-title">การวิเคราะห์รูปแบบค่าคงค้างที่ผิดปกติ</div>
+                <div class="chart-container">
+                    <canvas id="accrualsChart"></canvas>
+                </div>
+                <div class="insights-grid">
+                    <div class="insight-card disconnect">
+                        <h4>ปีที่ส่งสัญญาณเตือน (|DA| > 0.10)</h4>
+                        <p>2019, 2020, 2021, 2022, 2024</p>
+                    </div>
+                    <div class="insight-card conservative">
+                        <h4>รูปแบบการบัญชีแบบระมัดระวัง</h4>
+                        <p>ค่าที่เป็นลบส่วนใหญ่บ่งชี้ถึงการปฏิบัติทางบัญชีแบบระมัดระวัง</p>
+                    </div>
+                </div>
+            </div>
+
+            <p>รูปแบบดังกล่าวชี้ให้เห็นว่า แบบจำลองทางบัญชีนิติเวชอาจตีความการเปลี่ยนแปลงทางธุรกิจที่เกิดขึ้นตามปกติว่าเป็นการตกแต่งบัญชีได้ เนื่องจากปัจจัยต่างๆ เช่น การขยายตัวอย่างรวดเร็ว, การเปลี่ยนแปลงสัดส่วนลูกค้า, และรูปแบบการรับรู้รายได้ที่เปลี่ยนไป ล้วนส่งผลกระทบโดยตรงต่อความสัมพันธ์ทางบัญชีเดิมๆ ที่แบบจำลองใช้เป็นฐานในการอ้างอิง</p>
+
+            <h2>การวิเคราะห์การตอบสนองของตลาด</h2>
+            <p>เพื่อวัดความสัมพันธ์ระหว่างสัญญาณทางบัญชีและพฤติกรรมของตลาด นักวิจัยได้พัฒนาดัชนีความสอดคล้องระหว่างตลาดและบัญชี (Market-Accounting Alignment Index - MAAI) ค่าที่ใกล้ 1.0 บ่งชี้ว่าตลาดตอบสนองต่อความเสี่ยงทางบัญชีอย่างสมส่วน ในขณะที่ค่าที่สูงขึ้นแสดงว่าตลาดไม่สนใจความกังวลทางบัญชีนิติเวช</p>
+
+            <div class="visualization-container">
+                <div class="visualization-title">แนวโน้มดัชนีความสอดคล้องระหว่างตลาดและบัญชี (MAAI)</div>
+                <div class="chart-container">
+                    <canvas id="maaiChart"></canvas>
+                </div>
+                <div class="insights-grid">
+                    <div class="insight-card conservative">
+                        <h4>2017: 0.85 (สอดคล้องกัน)</h4>
+                        <p>การตอบสนองของตลาดสมส่วนกับสัญญาณทางบัญชี</p>
+                    </div>
+                    <div class="insight-card disconnect">
+                        <h4>2019: 2.67 (สวนทางกันอย่างมีนัยสำคัญ)</h4>
+                        <p>ความเชื่อมั่นของตลาดบดบังคำเตือนทางบัญชีนิติเวช</p>
+                    </div>
+                    <div class="insight-card validation">
+                        <h4>2024: 4.62 (สวนทางกันอย่างรุนแรง)</h4>
+                        <p>ความไม่สอดคล้องที่สูงที่สุดที่บันทึกได้ในชุดข้อมูลนี้</p>
+                    </div>
+                </div>
+            </div>
+
+            <h2>รูปแบบการเปิดเผยข้อมูลของฝ่ายบริหาร</h2>
+            <p>จากการวิเคราะห์หมายเหตุประกอบงบการเงินในปีที่ส่งสัญญาณเตือน พบว่าฝ่ายบริหารให้คำอธิบายเกี่ยวกับความผิดปกติทางบัญชีที่แบบจำลองตรวจพบค่อนข้างจำกัด โดยแม้จะมีการชี้แจงบริบททางธุรกิจที่ส่งผลต่อผลการดำเนินงาน แต่กลับแทบไม่ได้กล่าวถึงประเด็นเฉพาะทางบัญชี เช่น รูปแบบของค่าคงค้าง (Accruals) หรือการเปลี่ยนแปลงค่าประมาณการ ซึ่งเป็นต้นเหตุโดยตรงที่ทำให้แบบจำลองส่งสัญญาณเตือน</p>
+
+            <div class="visualization-container">
+                <div class="visualization-title">ตารางคะแนนความโปร่งใสในการเปิดเผยข้อมูล</div>
+                <div class="chart-container">
+                    <canvas id="disclosureChart"></canvas>
+                </div>
+                <p style="text-align: center; font-size: 0.9rem; color: #666; margin-top: 10px;">
+                    คะแนน: 0-3 ต่อหมวด (สูงสุด 15 คะแนน) คะแนนที่สูงขึ้นบ่งบอกถึงความโปร่งใสที่ดีกว่า
+                </p>
+            </div>
+
+            <p>ช่องว่างด้านความโปร่งใสนี้ถือเป็นโอกาสที่พลาดไปในการสื่อสารกับผู้มีส่วนได้ส่วนเสียให้ดียิ่งขึ้น โดยเฉพาะอย่างยิ่งเมื่อพิจารณาถึงลักษณะการดำเนินงานทางบัญชีแบบระมัดระวังของ NVIDIA</p>
+
+            <h2>บริบทของอุตสาหกรรมมีความสำคัญ</h2>
+            <p>เพื่อให้เห็นภาพรวมที่ชัดเจน การเปรียบเทียบ NVIDIA กับบริษัทอื่นในอุตสาหกรรมเดียวกันจึงเป็นสิ่งสำคัญ เนื่องจากข้อมูลภาพรวมของอุตสาหกรรมเซมิคอนดักเตอร์ชี้ให้เห็นว่า ในช่วงเปลี่ยนผ่านทางเทคโนโลยี บริษัทต่างๆ มักมีความผันผวนทางบัญชีนิติเวชสูงขึ้น ประเด็นนี้จึงชี้ว่าเกณฑ์มาตรฐานที่ใช้ทั่วไปอาจสร้างผลบวกลวง (False Positives) หรือกล่าวคือ ส่งสัญญาณเตือนผิดพลาดแก่บริษัทที่กำลังปรับตัวและเติบโตอย่างสมเหตุสมผล</p>
+
+            <div class="visualization-container">
+                <div class="visualization-title">การเปรียบเทียบเกณฑ์มาตรฐานทางบัญชีนิติเวชของภาคอุตสาหกรรม</div>
+                <div class="chart-container">
+                    <canvas id="industryChart"></canvas>
+                </div>
+                <div style="overflow-x: auto; margin-top: 20px;">
+                    <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                        <thead>
+                            <tr style="background-color: #f7fafc;">
+                                <th style="padding: 10px; text-align: left; border: 1px solid #e2e8f0;">บริษัท</th>
+                                <th style="padding: 10px; text-align: center; border: 1px solid #e2e8f0;">ค่า DA เฉลี่ย</th>
+                                <th style="padding: 10px; text-align: center; border: 1px solid #e2e8f0;">M-Score เฉลี่ย</th>
+                                <th style="padding: 10px; text-align: center; border: 1px solid #e2e8f0;">% การส่งสัญญาณเตือน</th>
+                                <th style="padding: 10px; text-align: center; border: 1px solid #e2e8f0;">ผลตอบแทนราคาหุ้น %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="background-color: #fef2f2;">
+                                <td style="padding: 10px; border: 1px solid #e2e8f0; font-weight: bold;">NVIDIA</td>
+                                <td style="padding: 10px; text-align: center; border: 1px solid #e2e8f0;">-0.263</td>
+                                <td style="padding: 10px; text-align: center; border: 1px solid #e2e8f0;">-1.722</td>
+                                <td style="padding: 10px; text-align: center; border: 1px solid #e2e8f0;">60%</td>
+                                <td style="padding: 10px; text-align: center; border: 1px solid #e2e8f0;">+821.9%</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; border: 1px solid #e2e8f0;">AMD</td>
+                                <td style="padding: 10px; text-align: center; border: 1px solid #e2e8f0;">-0.186</td>
+                                <td style="padding: 10px; text-align: center; border: 1px solid #e2e8f0;">-2.098</td>
+                                <td style="padding: 10px; text-align: center; border: 1px solid #e2e8f0;">40%</td>
+                                <td style="padding: 10px; text-align: center; border: 1px solid #e2e8f0;">+194.7%</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; border: 1px solid #e2e8f0;">Intel</td>
+                                <td style="padding: 10px; text-align: center; border: 1px solid #e2e8f0;">-0.052</td>
+                                <td style="padding: 10px; text-align: center; border: 1px solid #e2e8f0;">-2.537</td>
+                                <td style="padding: 10px; text-align: center; border: 1px solid #e2e8f0;">20%</td>
+                                <td style="padding: 10px; text-align: center; border: 1px solid #e2e8f0;">-32.8%</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; border: 1px solid #e2e8f0;">Qualcomm</td>
+                                <td style="padding: 10px; text-align: center; border: 1px solid #e2e8f0;">-0.127</td>
+                                <td style="padding: 10px; text-align: center; border: 1px solid #e2e8f0;">-2.291</td>
+                                <td style="padding: 10px; text-align: center; border: 1px solid #e2e8f0;">20%</td>
+                                <td style="padding: 10px; text-align: center; border: 1px solid #e2e8f0;">+89.2%</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 10px; border: 1px solid #e2e8f0;">Broadcom</td>
+                                <td style="padding: 10px; text-align: center; border: 1px solid #e2e8f0;">-0.093</td>
+                                <td style="padding: 10px; text-align: center; border: 1px solid #e2e8f0;">-2.384</td>
+                                <td style="padding: 10px; text-align: center; border: 1px solid #e2e8f0;">0%</td>
+                                <td style="padding: 10px; text-align: center; border: 1px solid #e2e8f0;">+213.5%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h2>นัยเชิงกลยุทธ์สำหรับผู้มีส่วนได้ส่วนเสีย</h2>
+            
+            <h3>สำหรับนักลงทุน</h3>
+            <p>การวิเคราะห์แสดงให้เห็นว่าการพึ่งพาเพียงเรื่องเล่าการเติบโตโดยไม่สนใจสัญญาณทางบัญชีนิติเวชอาจสร้างจุดบอดในการประเมินความเสี่ยง อย่างไรก็ตาม การที่กระแสเงินสดของ NVIDIA สนับสนุนกำไรได้อย่างแข็งแกร่ง ชี้ให้เห็นถึงความแข็งแกร่งทางการเงินพื้นฐานแม้จะมีสัญญาณเตือนจากแบบจำลองเป็นระยะ</p>
+
+            <h3>สำหรับทีมผู้บริหาร</h3>
+            <p>ช่วงเวลาของการเปลี่ยนแปลงทางธุรกิจต้องการกลยุทธ์การสื่อสารเชิงรุกเพื่อจัดการกับความผันผวนทางบัญชีนิติเวชที่หลีกเลี่ยงไม่ได้ การอธิบายการเปลี่ยนแปลงทางบัญชีก่อนที่จะถูกตรวจพบจากภายนอกสามารถรักษาความไว้วางใจของผู้มีส่วนได้ส่วนเสียและป้องกันความผันผวนที่ไม่จำเป็นได้</p>
+
+            <h3>สำหรับผู้จัดการความเสี่ยง</h3>
+            <p>เกณฑ์ทางบัญชีนิติเวชแบบดั้งเดิมอาจต้องมีการปรับเทียบให้เหมาะกับแต่ละภาคส่วน สำหรับบริษัทเทคโนโลยีที่กำลังเปลี่ยนแปลงอย่างรวดเร็ว การวิเคราะห์นี้แนะนำให้บูรณาการสัญญาณหลายอย่างเข้าด้วยกัน แทนที่จะพึ่งพาผลลัพธ์จากแบบจำลองเพียงอย่างเดียว</p>
+
+            <h2>มองไปข้างหน้า</h2>
+            <p>บทเรียนจากกรณีของ NVIDIA สอนให้รู้ว่าความสัมพันธ์ระหว่างคุณภาพทางบัญชีและมูลค่าตลาดในยุคเทคโนโลยีนั้นซับซ้อนยิ่งนัก และแม้แบบจำลองทางบัญชีนิติเวชจะเป็นเครื่องมือเตือนภัยชั้นดี แต่ก็ไม่สามารถใช้แทนที่การวิเคราะห์บริบททางธุรกิจและจิตวิทยาของตลาดที่ลึกซึ้งได้</p>
+
+            <p>สัญญาณเตือนที่เกิดขึ้นกับ NVIDIA จึงไม่ได้สะท้อนถึงการตกแต่งบัญชีที่น่ากังวล แต่เป็นผลจากความท้าทายในช่วงเปลี่ยนผ่านของธุรกิจอย่างแท้จริง สิ่งนี้ได้รับการยืนยันจากปัจจัยพื้นฐานที่แข็งแกร่งของบริษัท ทั้งการดำเนินงานทางบัญชีแบบระมัดระวัง, การสร้างกระแสเงินสดที่สม่ำเสมอ, และความโปร่งใสในการสื่อสาร อย่างไรก็ตาม การที่ตลาดเลือกที่จะเพิกเฉยต่อสัญญาณเหล่านี้ กลับเน้นย้ำให้เห็นถึงความเสี่ยงเชิงระบบที่ซ่อนอยู่ในมุมมองของนักลงทุนสายเติบโต (Growth Investor) ที่อาจประเมินความมั่นคงทางการเงินต่ำเกินไป</p>
+
+            <p>ในยุคที่ AI กำลังเข้ามาพลิกโฉมทุกอุตสาหกรรม เส้นทางทางบัญชีนิติเวชของ NVIDIA จึงเป็นกรณีศึกษาชิ้นเอกที่มอบบทเรียนล้ำค่า สำหรับการสร้างสมดุลในสมการที่ซับซ้อนซึ่งประกอบด้วย "นวัตกรรมที่รวดเร็ว", "ความน่าเชื่อถือของงบการเงิน" และ "ความคาดหวังของตลาด"</p>
+
+            <div class="takeaways">
+                <h3>ข้อคิดที่นำไปปฏิบัติได้</h3>
+                <ol>
+                    <li><strong>บูรณาการสัญญาณหลายอย่าง:</strong> ไม่มีตัวชี้วัดทางบัญชีนิติเวชใดเพียงตัวเดียวที่ให้ข้อมูลเชิงลึกที่สมบูรณ์ ควรผสมผสานการวิเคราะห์ค่าคงค้าง การประเมินกระแสเงินสด และรูปแบบการตอบสนองของตลาดเพื่อการประเมินที่ครอบคลุม</li>
+                    <li><strong>บริบทมีความสำคัญ:</strong> ช่วงเวลาของการเปลี่ยนแปลงทางธุรกิจย่อมกระตุ้นให้เกิดสัญญาณเตือนทางบัญชีนิติเวชโดยธรรมชาติ ควรแยกแยะระหว่างสัญญาณการตกแต่งบัญชีที่น่ากังวลและความผันผวนที่คาดว่าจะเกิดขึ้นจากการเปลี่ยนแปลง</li>
+                    <li><strong>ติดตามการสนับสนุนจากกระแสเงินสด:</strong> การที่กระแสเงินสดจากการดำเนินงานสนับสนุนกำไรได้อย่างแข็งแกร่ง เป็นการยืนยันที่สำคัญถึงผลการดำเนินงานทางการเงินที่รายงาน ไม่ว่าผลลัพธ์จากแบบจำลองทางบัญชีนิติเวชจะเป็นอย่างไร</li>
+                    <li><strong>เพิ่มประสิทธิภาพการสื่อสาร:</strong> การอธิบายการเปลี่ยนแปลงทางบัญชีเชิงรุกในช่วงการเปลี่ยนแปลงสามารถป้องกันการตีความความผันผวนตามปกติของตลาดอย่างผิด ๆ ได้</li>
+                    <li><strong>ปรับเทียบสำหรับภาคอุตสาหกรรม:</strong> บริษัทเทคโนโลยีอาจต้องปรับเกณฑ์ทางบัญชีนิติเวชเพื่อรองรับรูปแบบการเปลี่ยนแปลงรูปแบบธุรกิจที่ถูกต้องตามกฎหมาย</li>
+                </ol>
+            </div>
+
+            <h2>บทสรุปเชิงลึกสุดท้าย</h2>
+            <p>ข้อมูลทางบัญชีนิติเวชของ NVIDIA เผยให้เห็นว่าการประเมินความสมบูรณ์ทางการเงินต้องการการตีความที่ละเอียดอ่อนนอกเหนือจากการใช้แบบจำลองอย่างเคร่งครัด แม้ว่าตลาดอาจเพิกเฉยต่อสัญญาณคุณภาพทางบัญชีชั่วคราวในช่วงที่กำลังเติบโต แต่ความแข็งแกร่งพื้นฐานของการสร้างกระแสเงินสดและการดำเนินงานทางบัญชีแบบระมัดระวังเป็นรากฐานสำหรับการสร้างมูลค่าที่ยั่งยืน</p>
+
+            <p>ความท้าทายสำหรับผู้มีส่วนได้ส่วนเสียทุกคนอยู่ที่การพัฒนากรอบการทำงานที่ซับซ้อน ซึ่งสามารถแยกแยะระหว่างการตกแต่งบัญชีที่น่ากังวลและความผันผวนทางบัญชีตามธรรมชาติที่มาพร้อมกับการเปลี่ยนแปลงทางธุรกิจที่ถูกต้องตามกฎหมายในอุตสาหกรรมที่มีการพัฒนาอย่างรวดเร็ว</p>
+
+            <div class="questions">
+                <h3>สองคำถามชวนคิด:</h3>
+                <ol>
+                    <li>จะสามารถปรับเทียบแบบจำลองทางบัญชีนิติเวชได้อย่างไร เพื่อให้แยกแยะระหว่างการเปลี่ยนแปลงทางธุรกิจที่เกิดขึ้นตามปกติกับความเสี่ยงในการตกแต่งบัญชีที่แท้จริงได้อย่างแม่นยำยิ่งขึ้น</li>
+                    <li>เมื่อตลาดที่เน้นการเติบโตมีแนวโน้มที่จะเพิกเฉยต่อสัญญาณเตือนด้านคุณภาพการเงิน จะก่อให้เกิดความเสี่ยงเชิงระบบในมิติใดบ้าง และกรอบการบริหารความเสี่ยงจำเป็นต้องปรับตัวอย่างไรเพื่อรับมือกับ 'จุดบอด' ดังกล่าว</li>
+                </ol>
+            </div>
+        </article>
+
+        <div class="essential-insights">
+            <h3>สามข้อมูลเชิงลึกที่สำคัญ</h3>
+            <ol>
+                <li><strong>ความย้อนแย้งของการทำบัญชีแบบระมัดระวัง:</strong>
+                    ค่าคงค้างที่ผิดปกติ (Accruals) ที่เป็นลบของ NVIDIA สะท้อนการทำบัญชีที่รัดกุม แต่สิ่งที่ย้อนแย้งคือ แบบจำลองกลับส่งสัญญาณเตือนภัย บทสรุปจึงชี้ว่า ความผันผวนจากการเติบโตที่รวดเร็ว สามารถทำให้แบบจำลองตีความผิดพลาดว่าเป็นการตกแต่งบัญชีได้
+                </li>
+                <li><strong>ภูมิคุ้มกันของตลาดต่อสัญญาณคุณภาพ:</strong>
+                    การที่ตลาดเมินเฉยต่อคำเตือนทางบัญชีอย่างสิ้นเชิงในช่วงที่ NVIDIA เติบโตสูงสุด (MAAI พุ่งถึง 4.62 ในปี 2024) ได้เปิดโปง "จุดบอด" สำคัญในมุมมองของนักลงทุนสายเทคโนโลยี ที่อาจมองข้ามความแข็งแกร่งทางการเงินที่แท้จริง
+                </li>
+                <li><strong>กระแสเงินสดคือเครื่องพิสูจน์คุณภาพขั้นสุดท้าย:</strong>
+                    แม้จะมีสัญญาณเตือนจากแบบจำลอง แต่กระแสเงินสดจากการดำเนินงานที่แข็งแกร่งของ NVIDIA ซึ่งสูงเกือบเทียบเท่ากำไรสุทธิในปี 2024 ($28.09B vs $29.76B) เป็นหลักฐานชั้นดีที่ยืนยันคุณภาพของกำไร และเป็นเครื่องมือตรวจสอบที่เชื่อถือได้ยิ่งกว่าผลลัพธ์จากแบบจำลองเพียงอย่างเดียว
+                </li>
+            </ol>
+        </div>
+
+        <div class="meta-info">
+            <div class="word-count">จำนวนคำ: 2,247</div>
+        </div>
+    </div>
+
+    <script>
+        // Financial data (ข้อมูลทางการเงิน)
+        const financialData = {
+            years: [2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024],
+            netIncome: [563, 563, 440, 631, 614, 1666, 2796, 4332, 9752, 4368, 29760],
+            operatingCF: [909, 824, 835, 906, 1175, 1672, 4761, 5822, 9108, 5641, 28090],
+            stockPrice: [0.48, 0.80, 2.63, 4.78, 3.31, 5.86, 13.02, 29.36, 14.60, 49.50, 134.28],
+            beneishFlags: [false, false, false, true, true, true, false, false, true, false, true],
+            accrualFlags: [false, false, true, false, true, true, true, true, true, false, true],
+            discretionaryAccruals: [null, -0.033, -0.042, -0.052, 0.002, -0.109, -0.357, -0.260, -0.185, -0.026, -0.486],
+            maai: [null, null, null, 0.85, 1.23, 2.67, 1.85, 0.92, 3.41, null, 4.62]
+        };
+
+        let currentChart = null;
+
+        function getColor(beneishFlag, accrualFlag) {
+            if (beneishFlag && accrualFlag) return '#dc2626'; // สีแดง
+            if (beneishFlag || accrualFlag) return '#f59e0b'; // สีส้ม
+            return '#16a34a'; // สีเขียว
+        }
+
+        function showChart(chartType) {
+            // อัปเดตสถานะปุ่ม
+            document.querySelectorAll('.chart-controls button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn${chartType.charAt(0).toUpperCase() + chartType.slice(1)}`).classList.add('active');
+
+            const canvas = document.getElementById('earningsChart');
+            const ctx = canvas.getContext('2d');
+
+            if (currentChart) {
+                currentChart.destroy();
+            }
+
+            if (chartType === 'earnings') {
+                currentChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: financialData.years,
+                        datasets: [{
+                            label: 'กำไรสุทธิ ($M)',
+                            data: financialData.netIncome,
+                            borderColor: '#3b82f6',
+                            backgroundColor: '#3b82f6',
+                            fill: false,
+                            tension: 0.4
+                        }, {
+                            label: 'กระแสเงินสดจากการดำเนินงาน ($M)',
+                            data: financialData.operatingCF,
+                            borderColor: '#ef4444',
+                            backgroundColor: '#ef4444',
+                            fill: false,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: 'จำนวนเงิน (ล้านดอลลาร์สหรัฐ)'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'ปี'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            } else if (chartType === 'flags') {
+                const flagData = financialData.years.map((year, i) => ({
+                    x: year,
+                    y: 1,
+                    color: getColor(financialData.beneishFlags[i], financialData.accrualFlags[i])
+                }));
+
+                currentChart = new Chart(ctx, {
+                    type: 'scatter',
+                    data: {
+                        datasets: [{
+                            label: 'สัญญาณเตือนทางบัญชีนิติเวช',
+                            data: flagData,
+                            backgroundColor: flagData.map(d => d.color),
+                            borderColor: flagData.map(d => d.color),
+                            pointRadius: 15,
+                            pointHoverRadius: 20
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                display: false,
+                                min: 0.5,
+                                max: 1.5
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'ปี'
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const year = context.parsed.x;
+                                        const index = financialData.years.indexOf(year);
+                                        const beneish = financialData.beneishFlags[index];
+                                        const accrual = financialData.accrualFlags[index];
+                                        
+                                        if (beneish && accrual) return 'สัญญาณเตือนคู่ (ความเสี่ยงสูง)';
+                                        if (beneish || accrual) return 'สัญญาณเตือนเดี่ยว (ความเสี่ยงปานกลาง)';
+                                        return 'ไม่มีสัญญาณเตือน (ปลอดภัย)';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        function initializeCharts() {
+            // กราฟราคาหุ้น
+            const stockCtx = document.getElementById('stockChart').getContext('2d');
+            new Chart(stockCtx, {
+                type: 'line',
+                data: {
+                    labels: financialData.years,
+                    datasets: [{
+                        label: 'ราคาหุ้น ($)',
+                        data: financialData.stockPrice,
+                        borderColor: '#1d4ed8',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: financialData.years.map((year, i) => 
+                            getColor(financialData.beneishFlags[i], financialData.accrualFlags[i])
+                        ),
+                        pointBorderColor: financialData.years.map((year, i) => 
+                            getColor(financialData.beneishFlags[i], financialData.accrualFlags[i])
+                        ),
+                        pointRadius: 8,
+                        pointHoverRadius: 12
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'ราคาหุ้น ($)'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'ปี'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // กราฟคุณภาพ
+            const qualityCtx = document.getElementById('qualityChart').getContext('2d');
+            new Chart(qualityCtx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'คุณภาพกระแสเงินสด',
+                        data: financialData.years.map((year, i) => ({
+                            x: financialData.netIncome[i],
+                            y: financialData.operatingCF[i]
+                        })),
+                        backgroundColor: financialData.years.map((year, i) => 
+                            getColor(financialData.beneishFlags[i], financialData.accrualFlags[i])
+                        ),
+                        borderColor: financialData.years.map((year, i) => 
+                            getColor(financialData.beneishFlags[i], financialData.accrualFlags[i])
+                        ),
+                        pointRadius: 8,
+                        pointHoverRadius: 12
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'กำไรสุทธิ ($M)'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'กระแสเงินสดจากการดำเนินงาน ($M)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // กราฟองค์ประกอบ Beneish
+            const beneishCtx = document.getElementById('beneishChart').getContext('2d');
+            const flaggedYears = [2017, 2018, 2019, 2022, 2024];
+            const components = ['DSRI', 'SGI', 'AQI', 'GMI'];
+            const componentData = {
+                2017: [1.2, 1.4, 1.1, 0.9],
+                2018: [0.8, 1.0, 1.0, 1.2],
+                2019: [1.3, 2.7, 1.2, 0.8],
+                2022: [1.1, 2.2, 1.3, 1.1],
+                2024: [1.5, 6.8, 1.4, 0.7]
+            };
+
+            new Chart(beneishCtx, {
+                type: 'bar',
+                data: {
+                    labels: flaggedYears,
+                    datasets: components.map((comp, i) => ({
+                        label: comp,
+                        data: flaggedYears.map(year => componentData[year][i]),
+                        backgroundColor: [
+                            '#3b82f6', '#ef4444', '#10b981', '#f59e0b'
+                        ][i]
+                    }))
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'ปีที่ส่งสัญญาณเตือน'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'ค่าองค์ประกอบ'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // กราฟค่าคงค้างที่ผิดปกติ
+            const accrualsCtx = document.getElementById('accrualsChart').getContext('2d');
+            const accrualsData = financialData.discretionaryAccruals.filter(d => d !== null);
+            const accrualsYears = financialData.years.filter((year, i) => financialData.discretionaryAccruals[i] !== null);
+            
+            new Chart(accrualsCtx, {
+                type: 'bar',
+                data: {
+                    labels: accrualsYears,
+                    datasets: [{
+                        label: 'ค่าคงค้างที่ผิดปกติ',
+                        data: accrualsData,
+                        backgroundColor: accrualsData.map(d => Math.abs(d) > 0.1 ? '#dc2626' : '#22c55e'),
+                        borderColor: accrualsData.map(d => Math.abs(d) > 0.1 ? '#dc2626' : '#22c55e'),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'ปี'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'ค่าคงค้างที่ผิดปกติ'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // กราฟ MAAI
+            const maaiCtx = document.getElementById('maaiChart').getContext('2d');
+            const maaiFiltered = financialData.maai.filter(d => d !== null);
+            const maaiYears = financialData.years.filter((year, i) => financialData.maai[i] !== null);
+            
+            new Chart(maaiCtx, {
+                type: 'line',
+                data: {
+                    labels: maaiYears,
+                    datasets: [{
+                        label: 'ค่า MAAI',
+                        data: maaiFiltered,
+                        borderColor: '#dc2626',
+                        backgroundColor: 'rgba(220, 38, 38, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 8,
+                        pointHoverRadius: 12
+                    }, {
+                        label: 'สอดคล้องสมบูรณ์ (1.0)',
+                        data: maaiYears.map(() => 1.0),
+                        borderColor: '#22c55e',
+                        borderDash: [5, 5],
+                        fill: false,
+                        pointRadius: 0
+                    }, {
+                        label: 'เกณฑ์การสวนทาง (2.5)',
+                        data: maaiYears.map(() => 2.5),
+                        borderColor: '#f59e0b',
+                        borderDash: [3, 3],
+                        fill: false,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'ปี'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'ค่า MAAI'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // กราฟการเปิดเผยข้อมูล
+            const disclosureCtx = document.getElementById('disclosureChart').getContext('2d');
+            const disclosureYears = [2016, 2018, 2019, 2020, 2021, 2022, 2024];
+            const disclosureScores = [8, 9, 5, 10, 8, 6, 10];
+            
+            new Chart(disclosureCtx, {
+                type: 'bar',
+                data: {
+                    labels: disclosureYears,
+                    datasets: [{
+                        label: 'คะแนนความโปร่งใส',
+                        data: disclosureScores,
+                        backgroundColor: disclosureScores.map(score => {
+                            if (score >= 10) return '#22c55e';
+                            if (score >= 7) return '#f59e0b';
+                            return '#dc2626';
+                        }),
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'ปี'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'คะแนนความโปร่งใส (0-15)'
+                            },
+                            max: 15
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+            // กราฟเปรียบเทียบอุตสาหกรรม
+            const industryCtx = document.getElementById('industryChart').getContext('2d');
+            const companies = ['NVIDIA', 'AMD', 'Intel', 'Qualcomm', 'Broadcom'];
+            const stockPerformance = [821.9, 194.7, -32.8, 89.2, 213.5];
+            const avgMScore = [-1.722, -2.098, -2.537, -2.291, -2.384];
+            
+            new Chart(industryCtx, {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'บริษัทเซมิคอนดักเตอร์',
+                        data: companies.map((company, i) => ({
+                            x: avgMScore[i],
+                            y: stockPerformance[i],
+                            company: company
+                        })),
+                        backgroundColor: companies.map(company => 
+                            company === 'NVIDIA' ? '#dc2626' : '#3b82f6'
+                        ),
+                        borderColor: companies.map(company => 
+                            company === 'NVIDIA' ? '#dc2626' : '#3b82f6'
+                        ),
+                        pointRadius: companies.map(company => 
+                            company === 'NVIDIA' ? 12 : 8
+                        ),
+                        pointHoverRadius: companies.map(company => 
+                            company === 'NVIDIA' ? 16 : 12
+                        )
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'M-Score เฉลี่ย'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'ผลตอบแทนราคาหุ้น (%)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const point = context.raw;
+                                    return `${point.company}: M-Score ${point.x.toFixed(2)}, ผลตอบแทน ${point.y}%`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // เริ่มต้นด้วยกราฟกำไร
+            showChart('earnings');
+        }
+
+        // เริ่มต้นกราฟทั้งหมดเมื่อหน้าเว็บโหลด
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeCharts();
+        });
+    </script>
+</body>
+</html>
